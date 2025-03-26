@@ -23,39 +23,21 @@ MongoClient.connect(mongoURL).then((client) => {
 });
 
 // 🟢 GET all tasks (with filters & sorting)
+// 🟢 GET all tasks (with filters & sorting)
 app.get("/tasks", async (req, res) => {
+  console.log("In /tasks");
   const filters = {};
 
-  // ✅ Filter by statut, priorite, categorie (exact match)
+  // Apply filters
   if (req.query.statut) filters.statut = req.query.statut;
   if (req.query.priorite) filters.priorite = req.query.priorite;
-  if (req.query.categorie) filters.categorie = req.query.categorie;
 
-  // ✅ Filter by étiquette (check if array contains the value)
-  if (req.query.etiquette) filters.etiquettes = { $in: [req.query.etiquette] };
+  // Fetch tasks from MongoDB with applied filters and sorting
+  const tasks = await db.collection("tasks").find(filters).toArray();
 
-  // ✅ Filter by échéance (before & after)
-  if (req.query.apres || req.query.avant) {
-      filters.echeance = {};
-      if (req.query.apres) filters.echeance.$gte = new Date(req.query.apres);
-      if (req.query.avant) filters.echeance.$lte = new Date(req.query.avant);
-  }
+  console.log("Tasks:", tasks);  // Log the tasks for debugging
 
-  // ✅ Search in titre & description (case-insensitive)
-  if (req.query.q) {
-      filters.$or = [
-          { titre: { $regex: req.query.q, $options: "i" } },
-          { description: { $regex: req.query.q, $options: "i" } },
-      ];
-  }
-
-  // ✅ Sorting (default: dateCreation desc)
-  let sort = { dateCreation: -1 };
-  if (req.query.tri) sort[req.query.tri] = req.query.ordre === "desc" ? -1 : 1;
-
-  // 🟢 Fetch & send filtered tasks
-  const tasks = await db.collection("tasks").find(filters).sort(sort).toArray();
-  res.json(tasks);
+  res.json(tasks);  // Ensure this sends an array of tasks
 });
 
 // 🟢 GET single task
