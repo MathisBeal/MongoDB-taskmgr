@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const filterStatut = document.getElementById("filterStatut");
     const filterPriorite = document.getElementById("filterPriorite");
     const applyFiltersBtn = document.getElementById("applyFilters");
+    const addDefaultTaskBtn = document.getElementById("addDefaultTask"); // New button
 
     let currentEditingTaskId = null;  // Track the task being edited
 
@@ -126,6 +127,37 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error("Failed to delete task");
         }
     }
+
+    // 🟢 Add a task with default parameters when clicking the button
+    addDefaultTaskBtn.addEventListener("click", async () => {
+
+        const defaultTask = {
+            titre: "Default Task: " + new Date().toISOString().split('T')[0],  // Current date
+            description: "This is a default task.",
+            echeance: new Date().toISOString().split('T')[0], // Current date
+            statut: "à faire",  // Default status
+            priorite: "moyenne",  // Default priority
+            auteurNom: "John",
+            auteurPrenom: "Doe",
+            auteurEmail: "john.doe@example.com",
+            categorie: "General",
+            etiquettes: ["default", "task"],
+        };
+
+        const res = await fetch("/tasks", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(defaultTask),
+        });
+
+        if (res.ok) {
+            fetchTasks();  // Refresh task list
+        } else {
+            console.error("Failed to create default task");
+        }
+    });
 
     fetchTasks(); // Initial fetch
 });
