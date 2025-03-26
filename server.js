@@ -1,20 +1,14 @@
 const express = require("express");
 const { MongoClient, ObjectId } = require("mongodb");
-// const cors = require("cors");
 const cors = require('cors'); // Import CORS
 
-// const app = express();
 const app = express();
 const PORT = 3000;
 const mongoURL = "mongodb://localhost:27017"; // Update if needed
 const dbName = "taskManager";
 
 app.use(express.json());
-// app.use(cors());
 app.use(cors()); // Enable CORS
-
-
-
 
 let db;
 MongoClient.connect(mongoURL).then((client) => {
@@ -23,19 +17,41 @@ MongoClient.connect(mongoURL).then((client) => {
 });
 
 // 🟢 GET all tasks (with filters & sorting)
-// 🟢 GET all tasks (with filters & sorting)
 app.get("/tasks", async (req, res) => {
-  console.log("In /tasks");
+
   const filters = {};
 
-  // Apply filters
+  // ✅ Filter by statut
   if (req.query.statut) filters.statut = req.query.statut;
+
+  // ✅ Filter by priorite
   if (req.query.priorite) filters.priorite = req.query.priorite;
 
-  // Fetch tasks from MongoDB with applied filters and sorting
+  // ✅ Filter by categorie
+  if (req.query.categorie) filters.categorie = req.query.categorie;
+
+  // ✅ Filter by etiquette (check if array contains the value)
+  if (req.query.etiquette) filters.etiquettes = { $in: [req.query.etiquette] };
+
+  // ✅ Filter by echeance (before & after)
+  if (req.query.apres || req.query.avant) {
+      filters.echeance = {};
+      if (req.query.apres) filters.echeance.$gte = new Date(req.query.apres);
+      if (req.query.avant) filters.echeance.$lte = new Date(req.query.avant);
+  }
+
+  // ✅ Search in titre & description (case-insensitive)
+  if (req.query.q) {
+      filters.$or = [
+          { titre: { $regex: req.query.q, $options: "i" } },
+          { description: { $regex: req.query.q, $options: "i" } },
+      ];
+  }
+
+  // 🟢 Fetch tasks from MongoDB with applied filters
   const tasks = await db.collection("tasks").find(filters).toArray();
 
-  console.log("Tasks:", tasks);  // Log the tasks for debugging
+  console.log("/tasks fetched", tasks.length, "results");  // Log the tasks for debugging
 
   res.json(tasks);  // Ensure this sends an array of tasks
 });
