@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task Manager</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="/style.css">
 </head>
 <body>
     <h1>Task Manager</h1>
@@ -69,37 +69,37 @@
     <button id="applyFilters">Apply Filters</button>
 </div>
 
-    <!-- Task List -->
-    <ul id="taskList"></ul>
+<!-- Add Comment -->
+<div>
+    <h3>Add Comment</h3>
+    <form id="commentForm">
+        <input type="text" id="commentAuthorNom" placeholder="Author's Last Name">
+        <input type="text" id="commentAuthorPrenom" placeholder="Author's First Name">
+        <input type="email" id="commentAuthorEmail" placeholder="Author's Email">
+        <textarea id="commentContent" placeholder="Comment Content"></textarea>
+        <button type="submit">Add Comment</button>
+    </form>
+</div>
 
-    <!-- Add Comment -->
-    <div>
-        <h3>Add Comment</h3>
-        <form id="commentForm">
-            <input type="text" id="commentAuthorNom" placeholder="Author's Last Name">
-            <input type="text" id="commentAuthorPrenom" placeholder="Author's First Name">
-            <input type="email" id="commentAuthorEmail" placeholder="Author's Email">
-            <textarea id="commentContent" placeholder="Comment Content"></textarea>
-            <button type="submit">Add Comment</button>
-        </form>
-    </div>
+<!-- Add Subtask -->
+<div>
+    <h3>Add Subtask</h3>
+    <form id="subtaskForm">
+        <input type="text" id="subtaskTitle" placeholder="Subtask Title">
+        <select id="subtaskStatus">
+            <option value="à faire">À faire</option>
+            <option value="en cours">En cours</option>
+            <option value="terminée">Terminée</option>
+            <option value="annulée">Annulée</option>
+        </select>
+        <input type="date" id="subtaskEcheance" placeholder="Due Date">
+        <button type="submit">Add Subtask</button>
+    </form>
+</div>
 
-    <!-- Add Subtask -->
-    <div>
-        <h3>Add Subtask</h3>
-        <form id="subtaskForm">
-            <input type="text" id="subtaskTitle" placeholder="Subtask Title">
-            <select id="subtaskStatus">
-                <option value="à faire">À faire</option>
-                <option value="en cours">En cours</option>
-                <option value="terminée">Terminée</option>
-                <option value="annulée">Annulée</option>
-            </select>
-            <input type="date" id="subtaskEcheance" placeholder="Due Date">
-            <button type="submit">Add Subtask</button>
-        </form>
-    </div>
+<!-- Task List -->
+<ul id="taskList"></ul>
 
-    <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>

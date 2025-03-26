@@ -96,7 +96,7 @@ document.addEventListener("DOMContentLoaded", () => {
         li.innerHTML = `
             <strong>${task.titre}</strong> - ${task.statut} - ${task.priorite}
             <button class="edit" data-id="${task._id}">✏️</button>
-            <button class="delete" data-id="${task._id}">❌</button>
+            <button class="delete" data-id="${task._id}">💣</button>
 
             <h4>Subtasks</h4>
             <ul>

@@ -1,40 +1,181 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body and general styling */
 body {
     font-family: Arial, sans-serif;
-    max-width: 600px;
-    margin: auto;
+    background-color: #f4f4f9;
+    color: #333;
+    line-height: 1.6;
+    margin: 20px;
+}
+
+/* Header styling */
+header {
     text-align: center;
+    margin-bottom: 30px;
 }
 
+header h1 {
+    font-size: 2.5rem;
+    color: #4CAF50;
+}
+
+/* Form styling */
 form {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    background-color: #fff;
+    padding: 20px;
     margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-input, textarea, select, button {
-    padding: 8px;
-    font-size: 16px;
+form input, form select, form textarea, form button {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
 }
 
-ul {
-    list-style: none;
+form button {
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+}
+
+form button:hover {
+    background-color: #45a049;
+}
+
+/* Task List */
+#taskList {
+    list-style-type: none;
     padding: 0;
 }
 
-li {
-    background: #f4f4f4;
-    padding: 10px;
-    margin-bottom: 5px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+#taskList li {
+    background-color: #fff;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
 
-button.delete {
-    background: red;
+#taskList li:hover {
+    background-color: #f9f9f9;
+}
+
+#taskList h3 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+#taskList li .edit, 
+#taskList li .delete {
+    background-color: #4CAF50;
     color: white;
     border: none;
-    padding: 5px;
+    padding: 5px 10px;
+    margin-right: 10px;
     cursor: pointer;
+    border-radius: 5px;
+}
+
+#taskList li .delete {
+    background-color: #f44336;
+}
+
+#taskList li .edit:hover, 
+#taskList li .delete:hover {
+    opacity: 0.8;
+}
+
+/* Task details (Subtasks, Comments) */
+#taskList li h4 {
+    font-size: 1.2rem;
+    margin-top: 15px;
+}
+
+#taskList li ul {
+    list-style-type: none;
+    padding-left: 20px;
+}
+
+#taskList li ul li {
+    font-size: 1rem;
+    margin: 5px 0;
+}
+
+#taskList li ul li strong {
+    font-weight: bold;
+}
+
+/* Filters Section */
+#filters {
+    background-color: #fff;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#filters label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+#filters select, 
+#filters input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+/* Buttons */
+button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+    body {
+        margin: 10px;
+    }
+
+    #taskList li {
+        padding: 10px;
+    }
+
+    form input, form select, form textarea, form button {
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    header h1 {
+        font-size: 2rem;
+    }
+
+    #taskList h3 {
+        font-size: 1.3rem;
+    }
 }
