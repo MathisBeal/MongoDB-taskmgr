@@ -35,24 +35,39 @@
         <button type="submit">Save Task</button>
     </form>
 
-    <!-- Filters -->
-    <div id="filters">
-        <select id="filterStatut">
-            <option value="">All Statuses</option>
-            <option value="à faire">À faire</option>
-            <option value="en cours">En cours</option>
-            <option value="terminée">Terminée</option>
-            <option value="annulée">Annulée</option>
-        </select>
-        <select id="filterPriorite">
-            <option value="">All Priorities</option>
-            <option value="basse">Basse</option>
-            <option value="moyenne">Moyenne</option>
-            <option value="haute">Haute</option>
-            <option value="critique">Critique</option>
-        </select>
-        <button id="applyFilters">Apply Filters</button>
-    </div>
+<!-- Filters -->
+<div id="filters">
+    <select id="filterStatut">
+        <option value="">All Statuses</option>
+        <option value="à faire">À faire</option>
+        <option value="en cours">En cours</option>
+        <option value="terminée">Terminée</option>
+        <option value="annulée">Annulée</option>
+    </select>
+    
+    <select id="filterPriorite">
+        <option value="">All Priorities</option>
+        <option value="basse">Basse</option>
+        <option value="moyenne">Moyenne</option>
+        <option value="haute">Haute</option>
+        <option value="critique">Critique</option>
+    </select>
+
+    <!-- Add input for category -->
+    <input type="text" id="filterCategorie" placeholder="Category">
+
+    <!-- Add input for etiquetas -->
+    <input type="text" id="filterEtiquettes" placeholder="Tags (comma-separated)">
+
+    <!-- Date range filters for echeance (before/after) -->
+    <input type="date" id="filterApres" placeholder="After date">
+    <input type="date" id="filterAvant" placeholder="Before date">
+
+    <!-- Add input for free text search -->
+    <input type="text" id="filterQ" placeholder="Search tasks">
+
+    <button id="applyFilters">Apply Filters</button>
+</div>
 
     <!-- Task List -->
     <ul id="taskList"></ul>

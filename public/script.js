@@ -3,14 +3,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const taskList = document.getElementById("taskList");
     const filterStatut = document.getElementById("filterStatut");
     const filterPriorite = document.getElementById("filterPriorite");
+    const filterCategorie = document.getElementById("filterCategorie");
+    const filterEtiquettes = document.getElementById("filterEtiquettes");
+    const filterApres = document.getElementById("filterApres");
+    const filterAvant = document.getElementById("filterAvant");
+    const filterQ = document.getElementById("filterQ");
     const applyFiltersBtn = document.getElementById("applyFilters");
-    const addDefaultTaskBtn = document.getElementById("addDefaultTask"); // New button
+    const addDefaultTaskBtn = document.getElementById("addDefaultTask");
 
-    let currentEditingTaskId = null;  // Track the task being edited
+    let currentEditingTaskId = null;
 
     // 🟢 Handle task form submission (Create or Update)
     taskForm.addEventListener("submit", async (e) => {
-        e.preventDefault();  // Prevent the form from submitting the traditional way
+        e.preventDefault();
 
         const taskData = {
             titre: taskForm.titre.value,
@@ -22,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
             auteurPrenom: taskForm.auteurPrenom.value,
             auteurEmail: taskForm.auteurEmail.value,
             categorie: taskForm.categorie.value,
-            etiquettes: taskForm.etiquettes.value.split(',').map(tag => tag.trim()),  // Convert comma-separated tags to an array
+            etiquettes: taskForm.etiquettes.value.split(',').map(tag => tag.trim()),
         };
 
         if (currentEditingTaskId) {
@@ -38,7 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (res.ok) {
                 fetchTasks();  // Refresh task list
                 taskForm.reset();  // Reset form
-                currentEditingTaskId = null;  // Reset the editing task
+                currentEditingTaskId = null;
             } else {
                 console.error("Failed to update task");
             }
@@ -64,8 +69,15 @@ document.addEventListener("DOMContentLoaded", () => {
     // 🟢 Fetch tasks (with filters)
     async function fetchTasks() {
         let filters = [];
+
+        // Apply filters based on user input
         if (filterStatut.value) filters.push(`statut=${encodeURIComponent(filterStatut.value)}`);
         if (filterPriorite.value) filters.push(`priorite=${encodeURIComponent(filterPriorite.value)}`);
+        if (filterCategorie.value) filters.push(`categorie=${encodeURIComponent(filterCategorie.value)}`);
+        if (filterEtiquettes.value) filters.push(`etiquette=${encodeURIComponent(filterEtiquettes.value)}`);
+        if (filterApres.value) filters.push(`apres=${encodeURIComponent(filterApres.value)}`);
+        if (filterAvant.value) filters.push(`avant=${encodeURIComponent(filterAvant.value)}`);
+        if (filterQ.value) filters.push(`q=${encodeURIComponent(filterQ.value)}`);
 
         const queryString = filters.length ? `?${filters.join("&")}` : "";
         const res = await fetch(`/tasks${queryString}`);
@@ -77,7 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 🟢 Apply filters when clicking the button
     applyFiltersBtn.addEventListener("click", () => {
-        fetchTasks();
+        fetchTasks(); // Fetch tasks based on the selected filters
     });
 
     // 🟢 Render task item
@@ -130,13 +142,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 🟢 Add a task with default parameters when clicking the button
     addDefaultTaskBtn.addEventListener("click", async () => {
-
         const defaultTask = {
-            titre: "Default Task: " + new Date().toISOString().split('T')[0],  // Current date
+            titre: "Default Task: " + new Date().toISOString().split('T')[0],
             description: "This is a default task.",
-            echeance: new Date().toISOString().split('T')[0], // Current date
-            statut: "à faire",  // Default status
-            priorite: "moyenne",  // Default priority
+            echeance: new Date().toISOString().split('T')[0],
+            statut: "à faire",
+            priorite: "moyenne",
             auteurNom: "John",
             auteurPrenom: "Doe",
             auteurEmail: "john.doe@example.com",
