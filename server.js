@@ -85,6 +85,36 @@ app.delete("/tasks/:id", async (req, res) => {
     res.json({ message: "Task deleted" });
 });
 
+// 🟢 POST add comment to task
+app.post("/tasks/:id/comment", async (req, res) => {
+  const { auteurNom, auteurPrenom, auteurEmail, contenu } = req.body;
+  const comment = {
+      auteur: { nom: auteurNom, prenom: auteurPrenom, email: auteurEmail },
+      date: new Date(),
+      contenu,
+  };
+  
+  const update = {
+      $push: { commentaires: comment },
+  };
+
+  await db.collection("tasks").updateOne({ _id: new ObjectId(req.params.id) }, update);
+  res.json({ message: "Comment added successfully" });
+});
+
+// 🟢 POST add subtask to task
+app.post("/tasks/:id/subtask", async (req, res) => {
+  const { titre, statut, echeance } = req.body;
+  const subtask = { titre, statut, echeance: echeance ? new Date(echeance) : null };
+
+  const update = {
+      $push: { sousTaches: subtask },
+  };
+
+  await db.collection("tasks").updateOne({ _id: new ObjectId(req.params.id) }, update);
+  res.json({ message: "Subtask added successfully" });
+});
+
 app.use(express.static("public"));
 
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));

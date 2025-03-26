@@ -3,19 +3,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const taskList = document.getElementById("taskList");
     const filterStatut = document.getElementById("filterStatut");
     const filterPriorite = document.getElementById("filterPriorite");
-    const filterCategorie = document.getElementById("filterCategorie");
-    const filterEtiquettes = document.getElementById("filterEtiquettes");
-    const filterApres = document.getElementById("filterApres");
-    const filterAvant = document.getElementById("filterAvant");
-    const filterQ = document.getElementById("filterQ");
     const applyFiltersBtn = document.getElementById("applyFilters");
     const addDefaultTaskBtn = document.getElementById("addDefaultTask");
+    const commentForm = document.getElementById("commentForm");
+    const subtaskForm = document.getElementById("subtaskForm");
 
     let currentEditingTaskId = null;
 
     // 🟢 Handle task form submission (Create or Update)
     taskForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
+        e.preventDefault();  // Prevent form submission
 
         const taskData = {
             titre: taskForm.titre.value,
@@ -27,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
             auteurPrenom: taskForm.auteurPrenom.value,
             auteurEmail: taskForm.auteurEmail.value,
             categorie: taskForm.categorie.value,
-            etiquettes: taskForm.etiquettes.value.split(',').map(tag => tag.trim()),
+            etiquettes: taskForm.etiquettes.value.split(',').map(tag => tag.trim()),  // Convert tags to array
         };
 
         if (currentEditingTaskId) {
@@ -43,7 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (res.ok) {
                 fetchTasks();  // Refresh task list
                 taskForm.reset();  // Reset form
-                currentEditingTaskId = null;
+                currentEditingTaskId = null;  // Reset editing task
             } else {
                 console.error("Failed to update task");
             }
@@ -94,11 +91,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 🟢 Render task item
     function renderTask(task) {
+        // console.log("ASKED RENDER TASK");
         const li = document.createElement("li");
         li.innerHTML = `
             <strong>${task.titre}</strong> - ${task.statut} - ${task.priorite}
             <button class="edit" data-id="${task._id}">✏️</button>
             <button class="delete" data-id="${task._id}">❌</button>
+
+            <h4>Subtasks</h4>
+            <ul>
+                ${(task.sousTaches || []).map(subtask => `
+                    <li>${subtask.titre} - ${subtask.statut} - ${subtask.echeance ? new Date(subtask.echeance).toLocaleDateString() : 'No due date'}</li>
+                `).join('')}
+            </ul>
+
+            <h4>Comments</h4>
+            <ul>
+                ${(task.commentaires || []).map(comment => `
+                    <li>
+                        <strong>${comment.auteur.nom} ${comment.auteur.prenom}</strong> (${new Date(comment.date).toLocaleString()})
+                        <p>${comment.contenu}</p>
+                    </li>
+                `).join('')}
+            </ul>
         `;
 
         // Add event listeners for edit and delete buttons
@@ -126,7 +141,7 @@ document.addEventListener("DOMContentLoaded", () => {
         taskForm.categorie.value = task.categorie;
         taskForm.etiquettes.value = task.etiquettes ? task.etiquettes.join(', ') : '';
 
-        currentEditingTaskId = task._id;  // Track the task being edited
+        currentEditingTaskId = task._id;  // Track task being edited
     }
 
     // 🟢 Delete task
@@ -143,11 +158,11 @@ document.addEventListener("DOMContentLoaded", () => {
     // 🟢 Add a task with default parameters when clicking the button
     addDefaultTaskBtn.addEventListener("click", async () => {
         const defaultTask = {
-            titre: "Default Task: " + new Date().toISOString().split('T')[0],
+            titre: "Default Task: " + new Date().toISOString().split('T')[0],  // Current date
             description: "This is a default task.",
-            echeance: new Date().toISOString().split('T')[0],
-            statut: "à faire",
-            priorite: "moyenne",
+            echeance: new Date().toISOString().split('T')[0], // Current date
+            statut: "à faire",  // Default status
+            priorite: "moyenne",  // Default priority
             auteurNom: "John",
             auteurPrenom: "Doe",
             auteurEmail: "john.doe@example.com",
@@ -170,5 +185,70 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    fetchTasks(); // Initial fetch
+    // 🟢 Add comment to a task
+    commentForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        if (!currentEditingTaskId) {
+            console.error("No task selected for adding a comment.");
+            return;
+        }
+
+        const taskId = currentEditingTaskId;
+        const commentData = {
+            auteurNom: commentForm.commentAuthorNom.value,
+            auteurPrenom: commentForm.commentAuthorPrenom.value,
+            auteurEmail: commentForm.commentAuthorEmail.value,
+            contenu: commentForm.commentContent.value,
+        };
+
+        const res = await fetch(`/tasks/${taskId}/comment`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(commentData),
+        });
+
+        if (res.ok) {
+            fetchTasks();  // Refresh task list
+            commentForm.reset();
+        } else {
+            console.error("Failed to add comment");
+        }
+    });
+
+    // 🟢 Add subtask to a task
+    subtaskForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        if (!currentEditingTaskId) {
+            console.error("No task selected for adding a subtask.");
+            return;
+        }
+
+        const taskId = currentEditingTaskId;
+        const subtaskData = {
+            titre: subtaskForm.subtaskTitle.value,
+            statut: subtaskForm.subtaskStatus.value,
+            echeance: subtaskForm.subtaskEcheance.value,
+        };
+
+        const res = await fetch(`/tasks/${taskId}/subtask`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(subtaskData),
+        });
+
+        if (res.ok) {
+            fetchTasks();  // Refresh task list
+            subtaskForm.reset();
+        } else {
+            console.error("Failed to add subtask");
+        }
+    });
+
+    fetchTasks();  // Initial fetch of tasks
 });
