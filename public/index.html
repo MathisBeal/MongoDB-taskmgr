@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <h1>Task Manager</h1>
+
+    <!-- Task Form -->
+    <form id="taskForm">
+        <input type="text" id="titre" placeholder="Task Title" required>
+        <textarea id="description" placeholder="Task Description"></textarea>
+        <input type="date" id="echeance">
+        <select id="statut">
+            <option value="à faire">À faire</option>
+            <option value="en cours">En cours</option>
+            <option value="terminée">Terminée</option>
+            <option value="annulée">Annulée</option>
+        </select>
+        <select id="priorite">
+            <option value="basse">Basse</option>
+            <option value="moyenne">Moyenne</option>
+            <option value="haute">Haute</option>
+            <option value="critique">Critique</option>
+        </select>
+        <input type="text" id="auteurNom" placeholder="Author Name">
+        <input type="text" id="auteurPrenom" placeholder="Author First Name">
+        <input type="email" id="auteurEmail" placeholder="Author Email">
+        <input type="text" id="categorie" placeholder="Category">
+        <input type="text" id="etiquettes" placeholder="Tags (comma-separated)">
+        <button type="submit">Add Task</button>
+    </form>
+
+    <!-- Task List -->
+    <ul id="taskList"></ul>
+
+    <script src="script.js"></script>
+</body>
+</html>
