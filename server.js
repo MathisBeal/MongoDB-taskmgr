@@ -1,67 +1,92 @@
-const express = require('express');
-const { MongoClient, ObjectId } = require('mongodb');
-const bodyParser = require('body-parser');
+const express = require("express");
+const { MongoClient, ObjectId } = require("mongodb");
+// const cors = require("cors");
+const cors = require('cors'); // Import CORS
 
+// const app = express();
 const app = express();
-const port = 3000;
+const PORT = 3000;
+const mongoURL = "mongodb://localhost:27017"; // Update if needed
+const dbName = "taskManager";
 
-// MongoDB connection
-const url = 'mongodb://localhost:27017';
-const dbName = 'gestionTaches';
-let db, tasksCollection;
+app.use(express.json());
+// app.use(cors());
+app.use(cors()); // Enable CORS
 
-MongoClient.connect(url)
-  .then(client => {
+
+
+
+let db;
+MongoClient.connect(mongoURL).then((client) => {
     db = client.db(dbName);
-    tasksCollection = db.collection('tasks');
-    console.log('Connected to MongoDB');
-  })
-  .catch(err => console.error('MongoDB connection error:', err));
+    console.log("Connected to MongoDB");
+});
 
-// Middleware
-app.use(bodyParser.json());
-app.use(express.static('public'));
+// 🟢 GET all tasks (with filters & sorting)
+app.get("/tasks", async (req, res) => {
+  const filters = {};
 
-// API Routes
-app.get('/tasks', async (req, res) => {
-  const tasks = await tasksCollection.find().toArray();
+  // ✅ Filter by statut, priorite, categorie (exact match)
+  if (req.query.statut) filters.statut = req.query.statut;
+  if (req.query.priorite) filters.priorite = req.query.priorite;
+  if (req.query.categorie) filters.categorie = req.query.categorie;
+
+  // ✅ Filter by étiquette (check if array contains the value)
+  if (req.query.etiquette) filters.etiquettes = { $in: [req.query.etiquette] };
+
+  // ✅ Filter by échéance (before & after)
+  if (req.query.apres || req.query.avant) {
+      filters.echeance = {};
+      if (req.query.apres) filters.echeance.$gte = new Date(req.query.apres);
+      if (req.query.avant) filters.echeance.$lte = new Date(req.query.avant);
+  }
+
+  // ✅ Search in titre & description (case-insensitive)
+  if (req.query.q) {
+      filters.$or = [
+          { titre: { $regex: req.query.q, $options: "i" } },
+          { description: { $regex: req.query.q, $options: "i" } },
+      ];
+  }
+
+  // ✅ Sorting (default: dateCreation desc)
+  let sort = { dateCreation: -1 };
+  if (req.query.tri) sort[req.query.tri] = req.query.ordre === "desc" ? -1 : 1;
+
+  // 🟢 Fetch & send filtered tasks
+  const tasks = await db.collection("tasks").find(filters).sort(sort).toArray();
   res.json(tasks);
 });
 
-app.post('/tasks', async (req, res) => {
-  const { titre, description, echeance, statut, priorite, auteur, categorie, etiquettes, sousTaches, commentaires, historiqueModifications } = req.body;
-
-  // Validate required fields
-  if (!titre || !description || !statut || !priorite || !auteur || !categorie) {
-    return res.status(400).json({ error: "Missing required fields" });
-  }
-
-  const newTask = {
-    titre,
-    description,
-    dateCreation: new Date(),
-    echeance: echeance ? new Date(echeance) : null,
-    statut,
-    priorite,
-    auteur,
-    categorie,
-    etiquettes: etiquettes || [],
-    sousTaches: sousTaches || [],
-    commentaires: commentaires || [],
-    historiqueModifications: historiqueModifications || []
-  };
-
-  const result = await tasksCollection.insertOne(newTask);
-  res.status(201).json({ _id: result.insertedId, ...newTask });
+// 🟢 GET single task
+app.get("/tasks/:id", async (req, res) => {
+    const task = await db.collection("tasks").findOne({ _id: new ObjectId(req.params.id) });
+    task ? res.json(task) : res.status(404).send("Task not found");
 });
 
-app.delete('/tasks/:id', async (req, res) => {
-  const taskId = req.params.id;
-  await tasksCollection.deleteOne({ _id: new ObjectId(taskId) });
-  res.status(204).send();
+// 🟢 POST create task
+app.post("/tasks", async (req, res) => {
+    const newTask = {
+        ...req.body,
+        dateCreation: new Date(),
+    };
+    const result = await db.collection("tasks").insertOne(newTask);
+    res.status(201).json({ _id: result.insertedId, ...newTask });
 });
 
-// Start Server
-app.listen(port, () => {
-  console.log(`Server running on http://localhost:${port}`);
+// 🟢 PUT update task
+app.put("/tasks/:id", async (req, res) => {
+    const update = { $set: req.body };
+    await db.collection("tasks").updateOne({ _id: new ObjectId(req.params.id) }, update);
+    res.json({ message: "Task updated" });
 });
+
+// 🟢 DELETE task
+app.delete("/tasks/:id", async (req, res) => {
+    await db.collection("tasks").deleteOne({ _id: new ObjectId(req.params.id) });
+    res.json({ message: "Task deleted" });
+});
+
+app.use(express.static("public"));
+
+app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));

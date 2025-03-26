@@ -7,13 +7,12 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
     <h1>Task Manager</h1>
 
     <!-- Task Form -->
     <form id="taskForm">
-        <input type="text" id="titre" placeholder="Task Title" required>
-        <textarea id="description" placeholder="Task Description"></textarea>
+        <input type="text" id="titre" placeholder="Title" required>
+        <textarea id="description" placeholder="Description"></textarea>
         <input type="date" id="echeance">
         <select id="statut">
             <option value="à faire">À faire</option>
@@ -27,13 +26,32 @@
             <option value="haute">Haute</option>
             <option value="critique">Critique</option>
         </select>
-        <input type="text" id="auteurNom" placeholder="Author Name">
-        <input type="text" id="auteurPrenom" placeholder="Author First Name">
-        <input type="email" id="auteurEmail" placeholder="Author Email">
+        <input type="text" id="auteurNom" placeholder="Author's Name">
+        <input type="text" id="auteurPrenom" placeholder="Author's First Name">
+        <input type="email" id="auteurEmail" placeholder="Author's Email">
         <input type="text" id="categorie" placeholder="Category">
         <input type="text" id="etiquettes" placeholder="Tags (comma-separated)">
-        <button type="submit">Add Task</button>
+        <button type="submit">Save Task</button>
     </form>
+
+    <!-- Filters -->
+    <div id="filters">
+        <select id="filterStatut">
+            <option value="">All Statuses</option>
+            <option value="à faire">À faire</option>
+            <option value="en cours">En cours</option>
+            <option value="terminée">Terminée</option>
+            <option value="annulée">Annulée</option>
+        </select>
+        <select id="filterPriorite">
+            <option value="">All Priorities</option>
+            <option value="basse">Basse</option>
+            <option value="moyenne">Moyenne</option>
+            <option value="haute">Haute</option>
+            <option value="critique">Critique</option>
+        </select>
+        <button id="applyFilters">Apply Filters</button>
+    </div>
 
     <!-- Task List -->
     <ul id="taskList"></ul>
